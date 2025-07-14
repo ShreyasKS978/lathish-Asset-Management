@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:13
+    container_name: postgres-asset
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: asset_management
+    ports:
+      - "6619:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - asset-net
+
+  backend:
+    build: ./Backend
+    container_name: backend-asset
+    ports:
+      - "3062:3062"
+    depends_on:
+      - postgres
+    networks:
+      - asset-net
+
+  employee-asset:
+    build: ./Employee-Asset
+    container_name: employee-asset
+    ports:
+      - "8182:80"
+    networks:
+      - asset-net
+
+  hr-asset:
+    build: ./HR-Asset
+    container_name: hr-asset
+    ports:
+      - "8183:80"
+    networks:
+      - asset-net
+
+volumes:
+  pgdata:
+
+networks:
+  asset-net:
+
